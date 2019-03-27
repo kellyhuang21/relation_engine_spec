@@ -1,0 +1,14 @@
+// Test query -- find a test vertex by _key
+// Jinja vars:
+//   only_public - only display docs marked is_public
+// Bind vars:
+//   key - vertex _key attribute to find
+//   ws_ids - list of workspace ids the user has access to
+//            (this is a special param set by the relation engine API)
+
+let ws_ids = @ws_ids
+for o in test_vertex
+  {% if only_public %} filter o._is_public {% endif %}
+  {% if not only_public %} filter o.is_public || o.ws_id IN ws_ids {% endif %}
+  filter o._key == @key
+  return o
