@@ -1,0 +1,38 @@
+---
+"$schema": http://json-schema.org/draft-07/schema#
+title: GO_edges
+type: edge
+description: A entry for edges in the Gene Ontology (GO) hierarchy
+properties:
+  id:
+    type: string
+    description: GO id
+    examples:
+    - GO:0000136__GO:0031501__is_a
+    - GO:0000132__GO:0000278__intersection_of:part_of
+  from:
+    type: string
+    description: GO id
+    examples:
+    - GO:0023052
+  to:
+    type: string
+    title: GO id
+    examples:
+    - GO:0008150
+  edge_type:
+    type: string
+    title: Edge type
+    examples:
+    - is_a
+    - disjoint_from
+    - has_part
+    - part_of
+    - intersection_of
+    - intersection_of:part_of
+required:
+- id
+- from
+- to
+- edge_type
+
