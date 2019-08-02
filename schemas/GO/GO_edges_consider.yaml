@@ -1,0 +1,27 @@
+---
+"$schema": http://json-schema.org/draft-07/schema#
+title: GO_edges_consider
+type: edge
+description: A entry for consider edges in the Gene Ontology (GO) hierarchy
+properties:
+  id:
+    type: string
+    description: GO id
+    examples:
+    - GO:0000136__GO:0031501__consider
+    - GO:0000022__GO:0051231__consider
+  from:
+    type: string
+    description: GO id
+    examples:
+    - GO:0023052
+  to:
+    type: string
+    title: GO id
+    examples:
+    - GO:0008150
+required:
+- id
+- from
+- to
+
