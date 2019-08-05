@@ -7,7 +7,7 @@ schema:
     type: object
     description: A entry for disjoint_from edges in the Gene Ontology (GO) hierarchy
     properties:
-      id:
+      _key:
         type: string
         description: GO id
         examples:
@@ -24,6 +24,6 @@ schema:
         examples:
         - GO:0008150
     required:
-    - id
+    - _key
     - _from
     - _to

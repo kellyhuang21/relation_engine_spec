@@ -7,7 +7,7 @@ schema:
     type: object
     description: A entry for intersection_of edges in the Gene Ontology (GO) hierarchy
     properties:
-      id:
+      _key:
         type: string
         description: GO id
         examples:
@@ -33,7 +33,7 @@ schema:
         - regulates
         - has_part
     required:
-    - id
+    - _key
     - _from
     - _to
     - intersection_type
