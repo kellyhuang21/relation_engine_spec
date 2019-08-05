@@ -16,6 +16,13 @@ properties:
     examples:
     - mitochondrial genome maintenance
     - reproduction
+  namespace:
+    type: string
+    description: Denotes which of the three sub-ontologies the term belongs to.
+    examples:
+      - cellular component
+      - biological process
+      - molecular function
   alt_id:
     type: array
     description: Defines an alternate id for this term. A term may have any number
@@ -61,54 +68,6 @@ properties:
     - - Wikipedia:Reproduction
     - - KEGG_REACTION:R05612
       - RHEA:20836
-  is_a:
-    type: array
-    description: 'This tag describes a subclassing relationship between one term and
-      another. The value is the id of the term of which this term is a subclass. '
-    examples:
-    - - GO:0000054 ! ribosomal subunit export from nucleus
-    - - GO:0051231 ! spindle elongation
-      - GO:1903047 ! mitotic cell cycle process
-  intersection_of:
-    type: array
-    description: 'This tag indicates that this term is equivalent to the intersection
-      of several other terms. '
-    examples:
-    - - GO:0008150 ! biological_process
-      - regulates GO:0006312 ! mitotic recombination
-  disjoint_from:
-    type: array
-    description: 'This tag indicates that a term is disjoint from another, meaning
-      that the two terms have no instances or subclasses in common. '
-    examples:
-    - - GO:0044848 ! biological phase
-    - - GO:0003697 ! single-stranded DNA binding
-  relationship:
-    type: array
-    description: This tag describes a typed relationship between this term and another
-      term. The value of this tag should be the relationship type id, and then the
-      id of the target term.
-    examples:
-    - - regulates GO:0006312 ! mitotic recombination
-    - - part_of GO:0000070 ! mitotic sister chromatid segregation
-      - part_of GO:0007052 ! mitotic spindle organization
-  is_obsolete:
-    type: string
-    description: Whether or not this term is obsolete.
-    examples:
-    - 'true'
-  replaced_by:
-    type: array
-    description: Gives a term which replaces an obsolete term.
-    examples:
-    - - GO:0022609
-    - - GO:0044848
-      - GO:0008104
-  consider:
-    type: array
-    description: Gives a term which may be an appropriate substitute for an obsolete
-      term, but needs to be looked at carefully by a human expert before the replacement
-      is done.
     examples:
     - - GO:0042254
     - - GO:0008104
