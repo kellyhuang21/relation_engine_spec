@@ -4,7 +4,7 @@ type: edge
 schema:
     "$schema": http://json-schema.org/draft-07/schema#
     title: GO_edges_intersection_of
-    type: edge
+    type: object
     description: A entry for intersection_of edges in the Gene Ontology (GO) hierarchy
     properties:
       id:
