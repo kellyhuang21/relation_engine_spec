@@ -3,7 +3,7 @@
 # ancestors include is-a and other related parents, such as 
 # part-of/develops-from, that imply a hierarchical relationship
 
-name: ç
+name: GO_get_hierarchicalAncestors
 params:
   type: object
   required: [key]
