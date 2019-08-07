@@ -1,0 +1,14 @@
+# Get the direct parents for a specific term 
+
+name: GO_get_parents
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get the direct parents for a specific term 
+query: |
+  WITH GO_test_term FOR v, e IN 1..1 OUTBOUND @key GO_test_edges_isa
+      RETURN {term: v, edge: e}

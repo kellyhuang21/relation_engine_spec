@@ -1,0 +1,15 @@
+# Get all siblings of this term 
+name: GO_get_siblings
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get all siblings of this term
+query: |
+  WITH GO_test_term 
+      FOR v_parent, e_parent IN 1..1 OUTBOUND @key GO_test_edges_isa
+          FOR v_child, e_child in 1..1 INBOUND e_parent._to GO_test_edges_isa
+              RETURN {term: v, edge: e}

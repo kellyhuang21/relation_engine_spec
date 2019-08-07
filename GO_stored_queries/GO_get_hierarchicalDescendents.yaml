@@ -1,0 +1,16 @@
+# Get all hierarchical descendents
+# resources for this term. Hierarchical children include is-a 
+# and other related children, such as part-of/develops-from, 
+# that imply a hierarchical relationship
+name: GO_get_hierarchicalDescendants
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get all hierarhical descendents of this term
+query: |
+  WITH GO_test_term FOR v, e IN 1..1000000 INBOUND @key GO_test_edges_isa, GO_test_edges_relationship
+      RETURN {term: v, edge: e}

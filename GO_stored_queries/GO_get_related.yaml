@@ -1,0 +1,13 @@
+# Get all immediate related terms for this term
+name: GO_get_related
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get all immediate related terms for this term
+query: |
+  WITH GO_test_term FOR v, e IN 1 ANY "GO_test_term/GO:0000022" GO_test_edges_isa
+    RETURN {term: v, edge: e}

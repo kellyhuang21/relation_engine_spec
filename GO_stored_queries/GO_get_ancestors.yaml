@@ -1,0 +1,14 @@
+# Get all ancestors (all parent's parents) for this term
+
+name: GO_get_ancestors
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get all ancestors for this term
+query: |
+  WITH GO_test_term FOR v, e IN 1..1000000 OUTBOUND @key GO_test_edges_isa
+      RETURN {term: v, edge: e}

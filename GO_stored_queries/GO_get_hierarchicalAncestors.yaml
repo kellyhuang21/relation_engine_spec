@@ -1,0 +1,17 @@
+# Get all hierarchical ancestors 
+# (all parents’s parents) resources for this term. Hierarchical 
+# ancestors include is-a and other related parents, such as 
+# part-of/develops-from, that imply a hierarchical relationship
+
+name: ç
+params:
+  type: object
+  required: [key]
+  properties:
+    key:
+      type: string
+      title: Document key
+      description: Get all hierarchical ancestors for this term
+query: |
+  WITH GO_test_term FOR v, e IN 1..1000000 OUTBOUND @key GO_test_edges_isa, GO_test_edges_relationship
+      RETURN {term: v, edge: e}
