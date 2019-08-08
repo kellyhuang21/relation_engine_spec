@@ -22,6 +22,7 @@ query: |
   WITH GO_test_term 
       FOR v_parent, e_parent IN 1..1 OUTBOUND CONCAT("GO_test_term/", @key) GO_test_edges_isa
           FOR v_child, e_child in 1..1 INBOUND e_parent._to GO_test_edges_isa
+            FILTER e_child._from != CONCAT("GO_test_term/", @key)
             SORT v_child._key ASC
             LIMIT @offset, @limit
-            RETURN {term: v_child, edge: e_child}
+            RETURN v_child._key
