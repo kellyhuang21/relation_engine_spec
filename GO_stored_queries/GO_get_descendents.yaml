@@ -7,7 +7,7 @@ params:
     key:
       type: string
       title: Document key
-      description: GO id of the term you want to get all the descendents of 
+      description: GO id of the term you want to get all the descendants of 
     limit:
         type: integer
         default: 20
