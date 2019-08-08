@@ -1,7 +1,5 @@
-# Get the direct hierarchical children 
-# for this term. Hierarchical children include is-a 
-# and other related children, such as part-of/develops-from, 
-# that imply a hierarchical relationship 
+# Get the children of this term
+
 name: GO_get_children
 params:
   type: object
@@ -10,7 +8,7 @@ params:
     key:
       type: string
       title: Document key
-      description: Get the direct children for this term
+      description: GO id of the term you want to get the children of
     limit:
         type: integer
         default: 20
@@ -22,7 +20,7 @@ params:
         description: Result offset for pagination
         maximum: 100000
 query: |
-  WITH GO_test_term FOR v, e IN 1..1 INBOUND @key GO_test_edges_isa
+  WITH GO_test_term FOR v, e IN 1..1 INBOUND CONCAT("GO_test_term/", @key) GO_test_edges_isa
     SORT v._key ASC
     LIMIT @offset, @limit
     RETURN {term: v, edge: e}
