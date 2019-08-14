@@ -63,48 +63,41 @@ class TestNcbiTax(unittest.TestCase):
         ]
         create_test_docs(taxon_docs, child_docs)
 
-    def test_ancestors_valid(self):
-        """Test a valid query of taxon ancestors."""
+    def test_get_lineage_valid(self):
+        """Test a valid query of taxon lineage."""
         resp = requests.post(
             _CONF['re_api_url'] + '/api/v1/query_results',
-            params={'stored_query': 'ncbi_taxon_get_ancestors'},
-            data=json.dumps({'key': '2'}),
+            params={'stored_query': 'ncbi_taxon_get_lineage'},
+            data=json.dumps({'key': '7'}),
         ).json()
-        self.assertEqual(resp['count'], 1)
-        self.assertEqual(resp['results'][0]['rank'], 'Domain')
+        self.assertEqual(resp['count'], 2)
+        ranks = [r['rank'] for r in resp['results']]
+        names = [r['scientific_name'] for r in resp['results']]
+        self.assertEqual(ranks, ['Domain', 'Phylum'])
+        self.assertEqual(names, ['Bacteria', 'Proteobacteria'])
 
-    def test_descendants_valid(self):
+    def test_get_children(self):
         """Test a valid query of taxon descendants."""
         resp = requests.post(
             _CONF['re_api_url'] + '/api/v1/query_results',
-            params={'stored_query': 'ncbi_taxon_get_descendants'},
-            data=json.dumps({'key': '1'}),
+            params={'stored_query': 'ncbi_taxon_get_children'},
+            data=json.dumps({'key': '1', 'search_text': 'firmicutes,|proteobacteria'}),
         ).json()
-        self.assertEqual(resp['count'], 2)
-        ranks = {r['rank'] for r in resp['results']}
-        names = {r['scientific_name'] for r in resp['results']}
+        result = resp['results'][0]
+        self.assertEqual(result['total_count'], 2)
+        ranks = {r['rank'] for r in result['results']}
+        names = [r['scientific_name'] for r in result['results']]
         self.assertEqual(ranks, {'Phylum'})
-        self.assertEqual(names, {'Firmicutes', 'Proteobacteria'})
+        self.assertEqual(names, ['Firmicutes', 'Proteobacteria'])
 
-    def test_descendants_2levels_valid(self):
-        """Test a valid query for descendants with 2 levels."""
+    def test_get_children_cursor(self):
+        """Test a valid query to get children with a cursor."""
         resp = requests.post(
             _CONF['re_api_url'] + '/api/v1/query_results',
-            params={'stored_query': 'ncbi_taxon_get_descendants'},
-            data=json.dumps({'key': '1', 'levels': 2}),
+            params={'stored_query': 'ncbi_taxon_get_children_cursor'},
+            data=json.dumps({'key': '1'})
         ).json()
-        self.assertEqual(resp['count'], 6)
-        ranks = {r['rank'] for r in resp['results']}
-        names = {r['scientific_name'] for r in resp['results']}
-        self.assertEqual(ranks, {'Phylum', 'Class'})
-        self.assertEqual(names, {
-            'Firmicutes',
-            'Proteobacteria',
-            'Bacilli',
-            'Alphaproteobacteria',
-            'Gammaproteobacteria',
-            'Deltaproteobacteria',
-        })
+        self.assertEqual(len(resp['results']), 2)
 
     def test_siblings_valid(self):
         """Test a valid query for siblings."""
@@ -113,11 +106,12 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_get_siblings'},
             data=json.dumps({'key': '5'}),  # Querying from "Alphaproteobacteria"
         ).json()
-        self.assertEqual(resp['count'], 2)
-        ranks = {r['rank'] for r in resp['results']}
-        names = {r['scientific_name'] for r in resp['results']}
+        result = resp['results'][0]
+        self.assertEqual(result['total_count'], 2)
+        ranks = {r['rank'] for r in result['results']}
+        names = [r['scientific_name'] for r in result['results']]
         self.assertEqual(ranks, {'Class'})
-        self.assertEqual(names, {'Gammaproteobacteria', 'Deltaproteobacteria'})
+        self.assertEqual(names, ['Deltaproteobacteria', 'Gammaproteobacteria'])
 
     def test_siblings_root(self):
         """Test a query for siblings on the root node with no parent."""
@@ -126,7 +120,7 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_get_siblings'},
             data=json.dumps({'key': '1'}),  # Querying from "Bacteria"
         ).json()
-        self.assertEqual(resp['count'], 0)
+        self.assertEqual(resp['results'][0]['total_count'], 0)
 
     def test_siblings_nonexistent_node(self):
         """Test a query for siblings on the root node with no parent."""
@@ -135,7 +129,7 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_get_siblings'},
             data=json.dumps({'key': 'xyz'}),  # Nonexistent node
         ).json()
-        self.assertEqual(resp['count'], 0)
+        self.assertEqual(resp['results'][0]['total_count'], 0)
 
     def test_search_sciname_prefix(self):
         """Test a query to search sciname."""
@@ -144,8 +138,9 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_search_sci_name'},
             data=json.dumps({'search_text': 'prefix:bact'}),
         ).json()
-        self.assertEqual(resp['count'], 1)
-        self.assertEqual(resp['results'][0]['scientific_name'], 'Bacteria')
+        result = resp['results'][0]
+        self.assertEqual(result['total_count'], 1)
+        self.assertEqual(result['results'][0]['scientific_name'], 'Bacteria')
 
     def test_search_sciname_nonexistent(self):
         """Test a query to search sciname for empty results."""
@@ -154,7 +149,7 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_search_sci_name'},
             data=json.dumps({'search_text': 'xyzabc'}),
         ).json()
-        self.assertEqual(resp['count'], 0)
+        self.assertEqual(resp['results'][0]['total_count'], 0)
 
     def test_search_sciname_wrong_type(self):
         """Test a query to search sciname with the wrong type for the search_text param."""
@@ -183,8 +178,9 @@ class TestNcbiTax(unittest.TestCase):
             params={'stored_query': 'ncbi_taxon_search_sci_name'},
             data=json.dumps({'search_text': "prefix:gamma,|prefix:alpha,|prefix:delta"})
         ).json()
-        self.assertEqual(resp['count'], 3)
-        names = {r['scientific_name'] for r in resp['results']}
+        result = resp['results'][0]
+        self.assertEqual(result['total_count'], 3)
+        names = {r['scientific_name'] for r in result['results']}
         self.assertEqual(names, {'Gammaproteobacteria', 'Alphaproteobacteria', 'Deltaproteobacteria'})
 
     def test_search_sciname_offset_max(self):
@@ -192,20 +188,20 @@ class TestNcbiTax(unittest.TestCase):
         resp = requests.post(
             _CONF['re_api_url'] + '/api/v1/query_results',
             params={'stored_query': 'ncbi_taxon_search_sci_name'},
-            data=json.dumps({'search_text': "prefix:bact", "offset": 10001})
+            data=json.dumps({'search_text': "prefix:bact", "offset": 100001})
         )
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()['error'], "10001 is greater than the maximum of 10000")
+        self.assertEqual(resp.json()['error'], "100001 is greater than the maximum of 100000")
 
     def test_search_sciname_limit_max(self):
         """Test a query to search sciname with an invalid offset (greater than max)."""
         resp = requests.post(
             _CONF['re_api_url'] + '/api/v1/query_results',
             params={'stored_query': 'ncbi_taxon_search_sci_name'},
-            data=json.dumps({'search_text': "prefix:bact", "limit": 101})
+            data=json.dumps({'search_text': "prefix:bact", "limit": 1001})
         )
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.json()['error'], "101 is greater than the maximum of 100")
+        self.assertEqual(resp.json()['error'], "1001 is greater than the maximum of 1000")
 
     def test_fetch_taxon(self):
         """Test a valid query to fetch a taxon."""

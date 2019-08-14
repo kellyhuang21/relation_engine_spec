@@ -81,6 +81,7 @@ stored_query_schema = {
     'properties': {
         'name': {'type': 'string'},
         'params': {'type': 'object'},
+        'query_prefix': {'type': 'string'},
         'query': {'type': 'string'}
     }
 }
@@ -96,6 +97,9 @@ def validate_stored_queries():
             data = yaml.safe_load(fd)
         jsonschema.validate(data, stored_query_schema)
         name = data['name']
+        filename = os.path.splitext(os.path.basename(path))[0]
+        if name != filename:
+            _fatal(f'Name key should match filename: {name} vs {filename}')
         if name in names:
             _fatal(f'Duplicate queries named {name}')
         else:
