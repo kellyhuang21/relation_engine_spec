@@ -76,10 +76,10 @@ schema:
       - - GO:0008104
         - GO:0051019
     is_obsolete:
-      type: string
+      type: boolean
       description: Whether or not this term is obsolete.
-      examples:
-      - 'true'
+      examples: [true]
+      default: false
     created_by:
       type: string
       description: Optional tag added by OBO-Edit to indicate the creator of the term
